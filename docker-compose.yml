@@ -1,0 +1,46 @@
+# version: '3.9'
+# Docker Compose Stack to Spinup the NoteIt App.
+
+services:
+  mongo:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - noteit-network
+      
+  backend:
+    build:
+      context: ${BACKEND_PATH} # Ensure to set this variable with the value of backend repo path where you have clone it.
+      dockerfile: Dockerfile
+    environment:
+      - ENVIRONMENT=Prod
+      - MONGO_URI=mongodb://mongo:27017
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mongo
+    networks:
+      - noteit-network
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    environment:
+      - REACT_APP_ENVIRONMENT=Prod
+      - REACT_APP_BACKEND_URL=http://backend:8080  
+    depends_on:
+      - backend
+    networks:
+      - noteit-network
+
+volumes:
+  mongo_data:
+
+networks:
+  noteit-network:
