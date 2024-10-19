@@ -9,6 +9,10 @@ RUN npm install
 
 COPY . .
 
+# React build-time args
+ARG REACT_APP_ENVIRONMENT
+ARG REACT_APP_BACKEND_URL
+
 # Build
 RUN npm run build
 
